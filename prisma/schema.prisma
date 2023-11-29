@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id         String      @id @default(uuid())
+  userId     String      @unique
+  billboards Billboard[] @relation("AdminToBillboards")
+  categories Category[]  @relation("AdminToCategories")
+  products   Product[]   @relation("AdminToProducts")
+  colors     Color[]
+  scents     Scent[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+model Billboard {
+  id         String     @id @default(uuid())
+  lable      String
+  urlImage   String
+  adminId    String
+  admin      Admin      @relation("AdminToBillboards", fields: [adminId], references: [userId])
+  categories Category[] @relation("CategoryToBillboard")
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  adminId     String
+  billboardId String
+  billboard   Billboard @relation("CategoryToBillboard", fields: [billboardId], references: [id])
+  products    Product[] @relation("CategoryToProducts")
+  admin       Admin     @relation("AdminToCategories", fields: [adminId], references: [userId])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String
+  price       Float
+  urlImage    String
+  adminId     String
+  admin       Admin    @relation("AdminToProducts", fields: [adminId], references: [userId])
+  categoryId  String
+  category    Category @relation("CategoryToProducts", fields: [categoryId], references: [id])
+  colorId     String
+  color       Color    @relation("ColorToProducts", fields: [colorId], references: [id])
+  scentId     String
+  scent       Scent    @relation("ScentToProducts", fields: [scentId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Order {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  phone     String
+  cost      Float
+  details   Json
+  status    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Color {
+  id        String    @id @default(uuid())
+  name      String
+  value     String
+  adminId   String
+  admin     Admin     @relation(fields: [adminId], references: [userId])
+  products  Product[] @relation("ColorToProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Scent {
+  id        String    @id @default(uuid())
+  name      String
+  adminId   String
+  admin     Admin     @relation(fields: [adminId], references: [userId])
+  products  Product[] @relation("ScentToProducts")
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
