@@ -38,7 +38,7 @@ const ActionTable : React.FC<ActionTableProps> = (
                     <TableCell className="text-center w-[15%]">{initialData.phone}</TableCell>
                     <TableCell className="text-center w-[25%]">{initialData.address}</TableCell>
                     <TableCell className="text-center w-[30%]">
-                      {Object.entries(initialData?.details).map(([key, value]) => (
+                      {initialData && initialData.details && Object.entries(initialData?.details).map(([key, value]) => (
                         <div className="grid grid-cols-2" key={key}>
                           <div>{value.product.name}</div>
                           <div>{value.count}</div>
